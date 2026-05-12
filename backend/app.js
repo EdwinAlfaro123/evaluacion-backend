@@ -10,6 +10,8 @@ import estudianteRoutes from "./src/routes/estudiante.js"
 import maestroRoutes from "./src/routes/maestro.js"
 import tareaRoutes from "./src/routes/tarea.js"
 import materiaRoutes from "./src/routes/materia.js"
+import categoriaRoutes from "./src/routes/categoria.js"
+import logoutRoutes from "./src/routes/logout.js"
 
 const app = express();
 
@@ -30,5 +32,7 @@ app.use("/api/estudiantes", estudianteRoutes)
 app.use("/api/maestros", maestroRoutes)
 app.use("/api/tareas", tareaRoutes)
 app.use("/api/materias", materiaRoutes)
+app.use("/api/categoria", categoriaRoutes)
+app.use ("/api/logout", logoutRoutes)
 
 export default app;
