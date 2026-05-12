@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import registerEstudianteRoutes from "./src/routes/registerEstudinte.js";
 import loginEstudianteRoutes from "./src/routes/loginEstudiante.js";
 import recoveryPasswordEsdiante from "./src/routes/recoveryPasswordEstudiante.js"
+import estudianteRoutes from "./src/routes/estudiante.js"
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(express.json());
 app.use("/api/registerEstudiante", registerEstudianteRoutes)
 app.use("/api/loginEstudiante", loginEstudianteRoutes)
 app.use("/api/recoveryPassword", recoveryPasswordEsdiante)
+app.use("/api/estudiantes", estudianteRoutes)
 
 export default app;
