@@ -43,6 +43,7 @@ export default function CrudPage({ config }) {
   const [items, setItems] = useState([]);
   const [query, setQuery] = useState("");
   const [form, setForm] = useState(emptyForm(config.fields));
+  const [fields, setFields] = useState(config.fields);
   const [editing, setEditing] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,13 +63,39 @@ export default function CrudPage({ config }) {
     }
   };
 
+  const loadFieldOptions = async () => {
+  const fieldsWithOptions = await Promise.all(
+    config.fields.map(async (field) => {
+      if (!field.sourceEndpoint) return field;
+
+      try {
+        const { data } = await api.get(field.sourceEndpoint);
+
+        return {
+          ...field,
+          options: Array.isArray(data) ? data : []
+        };
+      } catch {
+        return {
+          ...field,
+          options: []
+        };
+      }
+    })
+  );
+
+  setFields(fieldsWithOptions);
+};
+
   useEffect(() => {
     setItems([]);
     setQuery("");
     setModalOpen(false);
     setEditing(null);
     setForm(emptyForm(config.fields));
+    setFields(config.fields);
     loadData();
+    loadFieldOptions();
   }, [config.key]);
 
   const filtered = useMemo(() => {
@@ -79,19 +106,28 @@ export default function CrudPage({ config }) {
 
   const openCreate = () => {
     setEditing(null);
-    setForm(emptyForm(config.fields));
+    setForm(emptyForm(fields));
     setModalOpen(true);
   };
 
-  const openEdit = (item) => {
-    setEditing(item);
-    const nextForm = emptyForm(config.fields);
-    config.fields.forEach((field) => {
-      nextForm[field.name] = item[field.name] ?? nextForm[field.name];
-    });
-    setForm(nextForm);
-    setModalOpen(true);
-  };
+  const getObjectId = (value) => {
+  if (value && typeof value === "object") return value._id || value.id || "";
+  return value || "";
+};
+
+const openEdit = (item) => {
+  setEditing(item);
+
+  const nextForm = emptyForm(fields);
+
+  fields.forEach((field) => {
+    const value = item[field.name] ?? nextForm[field.name];
+    nextForm[field.name] = field.type === "select" ? getObjectId(value) : value;
+  });
+
+  setForm(nextForm);
+  setModalOpen(true);
+};
 
   const changeForm = (name, value) => {
     setForm((current) => ({ ...current, [name]: value }));
@@ -207,7 +243,7 @@ export default function CrudPage({ config }) {
       {modalOpen && (
         <Modal
           title={editing ? `Editar ${config.title}` : `Agregar ${config.title}`}
-          fields={config.fields}
+          fields={fields}
           form={form}
           onChange={changeForm}
           onClose={() => setModalOpen(false)}

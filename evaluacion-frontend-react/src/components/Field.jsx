@@ -16,6 +16,24 @@ export default function Field({ field, value, onChange }) {
   }
 
   if (field.type === "select") {
+    const getOptionValue = (option) => {
+      if (typeof option !== "object" || option === null) return option;
+      return option[field.optionValue || "value"] ?? option._id ?? "";
+    };
+
+    const getOptionLabel = (option) => {
+      if (typeof option !== "object" || option === null) return option;
+
+      if (field.optionLabelFields?.length) {
+        return field.optionLabelFields
+          .map((key) => option[key])
+          .filter(Boolean)
+          .join(" ");
+      }
+
+      return option[field.optionLabel || "label"] || option.name || option.email || option._id;
+    };
+
     return (
       <label className="space-y-1 text-sm font-medium text-slate-700">
         <span>{field.label}</span>
@@ -26,9 +44,17 @@ export default function Field({ field, value, onChange }) {
           onChange={(e) => onChange(field.name, e.target.value)}
         >
           <option value="">Seleccionar</option>
-          {field.options?.map((option) => (
-            <option key={option} value={option}>{option}</option>
-          ))}
+
+          {field.options?.map((option) => {
+            const optionValue = getOptionValue(option);
+            const optionLabel = getOptionLabel(option);
+
+            return (
+              <option key={optionValue} value={optionValue}>
+                {optionLabel}
+              </option>
+            );
+          })}
         </select>
       </label>
     );

@@ -42,7 +42,7 @@ export const resources = [
       { name: "dueDate", label: "Fecha límite", type: "date" },
       { name: "priority", label: "Prioridad", type: "select", options: ["Baja", "Media", "Alta"] },
       { name: "status", label: "Estado", type: "select", options: ["Pendiente", "En proceso", "Completada"] }
-    ],
+    ],  
     columns: ["title", "description", "dueDate", "priority", "status"]
   },
   {
@@ -52,7 +52,7 @@ export const resources = [
     canCreate: true,
     fields: [
       { name: "subjectName", label: "Materia", type: "text", required: true },
-      { name: "teacher_id", label: "ID del maestro", type: "text" },
+      { name: "teacher_id", label: "Profesor", type: "select", required: true, sourceEndpoint: "/maestros", optionValue: "_id", optionLabelFields: ["name", "lastname"] },
       { name: "isAvailable", label: "Disponible", type: "checkbox" }
     ],
     columns: ["subjectName", "teacher_id", "isAvailable"]
